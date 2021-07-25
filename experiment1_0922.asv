@@ -1,8 +1,8 @@
 wstring = 'norm'; % 'norm' or 'coeff' %coeff:relative-relative; norm: relative-absolute
 scaled = 'bad'; % 'well' or 'bad' %valor de rho
 symbolic = 'no'; % 'no' or 'yes'
-epsilon = 3; % 0 <= epsilon <= degree
-r = 2; % Chebyshev... First Kind: 1 Second Kind: 2
+epsilon = 1; % 0 <= epsilon <= degree
+r = 1; % Chebyshev... First Kind: 1 Second Kind: 2
 %% DEGREE-4 RANDOM MATRIX POLYNOMIAL: Experiment for the paper
 disp('Building matrix polynomial')
 n = 20; %size of the polynomial
@@ -110,6 +110,10 @@ elseif epsilon == 1
         K11 = [o -2*id];
         K21T = [o o; -2*id o; o -2*id];
     end
+    size(M1)
+    size(K21T)
+    size(K11)
+    size(o)
     C1 = [M1 K21T; K11 o o];
     C2 = [M2 K22T; K12 o o];
 elseif epsilon == 2
@@ -124,8 +128,8 @@ elseif epsilon == 2
         K11 = [o -2*id o; o o -2*id];
         K21T = [o; -2*id];
     end
-    C1 = [M1 K21T; K11 zeros(2*n,n)];
-    C2 = [M2 K22T; K12 zeros(2*n,n)];
+    C1 = [M1 K21T; K11 o];
+    C2 = [M2 K22T; K12 o];
 else
     M1 = [2*P4 o o o];
     M2 = [P3 P2-P4 P1 P0];
@@ -136,7 +140,7 @@ else
         K11 = [o -2*id o o; o o -2*id o; o o o -2*id];
     end
     C1 = [M1; K11];
-    C2 = [M2; K12];
+    C2 = [M2; K22];
 end
 nC1 = norm(C1);
 nC2 = norm(C2);
@@ -157,7 +161,6 @@ disp('Computing eigenvalues')
 
 [Vc,ec]=eig(C1,C2);
 [ec,ind] = sort(diag(ec),'ascend');
-ec
 Vc = Vc(:,ind); 
 
 
