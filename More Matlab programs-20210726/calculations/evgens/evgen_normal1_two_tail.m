@@ -1,0 +1,9 @@
+function matrix = evgen_normal1_two_tail(n, ~, ~)
+% Return eigenvalues from the normal1_left_tail and normal1_right_tail
+% generators, half and half.
+
+    matrix = [ ...
+        evgen_normal1_right_tail(floor(n/2), [], []) ...
+        evgen_normal1_left_tail(ceil(n/2), [], []) ...
+    ];
+end

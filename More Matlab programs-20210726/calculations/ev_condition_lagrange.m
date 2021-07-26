@@ -1,0 +1,9 @@
+function [kratios, bounds] = ev_condition_lagrange(d, polysize, ...
+    nodegen, polygen, evgen, pkmean, pkwidth, boundgens)
+% Lagrange eigenvalue condition number bound test function.
+% Use this function from the generic_ev_test script.
+
+    [kratios, bounds] = ev_generic_condition( ...
+        @std_xchg_lagrange_monomial, @basiseval_lagrange, ...
+        d, polysize, nodegen, polygen, evgen, pkmean, pkwidth, boundgens);
+end

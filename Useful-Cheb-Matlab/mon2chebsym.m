@@ -1,7 +1,7 @@
 function [a] = mon2chebsym(B,k,j)
 %CHEB2MON  Monomial to Chebyshev basis conversion.
 %   A = MON2CHEB(B, k, j) converts polynomial B (of degree k) given in monomial basis to 
-%   Chebyshev basis A. The polynomial must be given with its coefficients
+%   Chebyshev basis of first kind (j = 1) or second kind (j = 2) A. The polynomial must be given with its coefficients
 %   in descending order, i.e. B = B_N*x^N + ... + B_1*x + B_0
 %
 %   Example: 
@@ -20,9 +20,6 @@ function [a] = mon2chebsym(B,k,j)
  
 %   Zoltán Csáti
 %   2015/03/31
- 
-%j=1,2 indicates whether we want the resulting polynomial to be written in
-%type 1 or 2
  
 % Construct the Chebyshev polynomials of the first kind
 C = chebpoly(k,j);

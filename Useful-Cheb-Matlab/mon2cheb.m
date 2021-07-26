@@ -1,7 +1,7 @@
-function a = mon2cheb(b)
+function a = mon2cheb(b,r)
 %CHEB2MON  Monomial to Chebyshev basis conversion.
 %   A = MON2CHEB(B) converts polynomial B given in monomial basis to 
-%   Chebyshev basis A. The polynomial must be given with its coefficients
+%   Chebyshev basis A of first (r = 1) or second (r = 2) kind. The polynomial must be given with its coefficients
 %   in descending order, i.e. B = B_N*x^N + ... + B_1*x + B_0
 %
 %   Example: 
@@ -24,7 +24,7 @@ function a = mon2cheb(b)
 
 % Construct the Chebyshev polynomials of the first kind
 N = length(b)-1;
-C = chebpoly(N);
+C = chebpoly(r,N);
 % Create the transformation matrix
 A = zeros(N+1);
 for k = 1:N+1
@@ -34,13 +34,18 @@ end
 a = A\b(:);
 
 
-function C = chebpoly(n)
+function C = chebpoly(r,n)
 % C = CHEBPOLY(N) returns Chebyshev polynomials of the first kind from 
 % degree 0 to n
 
 C = cell(n+1,1);   % using cell array because of the different matrix sizes
-C{1} = 1;          % T_0 = 1
-C{2} = [1 0];      % T_1 = x
+if r == 1
+    C{1} = 1;          % T_0 = 1
+    C{2} = [1 0];      % T_1 = x
+else
+    C{1} = 1;          % U_0 = 1
+    C{2} = [2 0];      % U_1 = 2x
+end
 for k = 3:n+1      % T_n = 2xT_n-1 - T_n-2
     C{k} = [2*C{k-1} 0] - [0 0 C{k-2}];
 end

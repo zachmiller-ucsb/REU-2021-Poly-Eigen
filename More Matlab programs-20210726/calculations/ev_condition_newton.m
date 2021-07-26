@@ -1,0 +1,9 @@
+function [kratios, bounds] = ev_condition_newton(d, polysize, ...
+    nodegen, polygen, evgen, pkmean, pkwidth, boundgens)
+% Newton eigenvalue condition number bound test function.
+% Use this function from the generic_ev_test script.
+
+    [kratios, bounds] = ev_generic_condition( ...
+        @std_xchg_newton_monomial, @basiseval_newton, ...
+        d, polysize, nodegen, polygen, evgen, pkmean, pkwidth, boundgens);
+end
