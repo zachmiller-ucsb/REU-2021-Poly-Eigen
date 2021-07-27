@@ -35,8 +35,6 @@ elseif ep == 1
     end
     for i = 1:ep-1 % Right Block Rows 1 to k - ep - 1 M0
         M0((i-1)*n+1:i*n, 1:n) = -coeff(L-i-1);
-    end
-    
 elseif ep >= 2 & ep <= k - 3
     
 elseif ep == k - 2
@@ -45,3 +43,7 @@ else % ep == k - 1
     
 end
     
+
+
+
+
