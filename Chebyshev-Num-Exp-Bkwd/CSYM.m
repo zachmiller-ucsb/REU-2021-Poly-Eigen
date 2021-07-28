@@ -4,8 +4,8 @@ function [C1,C0] = C(n,a,j) %Constructing the C_epsilon and C_mu
 % Inputs: n=size of blocs, j=1 or 2 (for Chebyshev of type 1 or 2),
 % a=number of rows of the minimal basis.
 
-        C1 = zeros(a*n,(a+1)*n);
-        C0 = zeros(a*n,(a+1)*n);
+        C1 = sym(zeros(a*n,(a+1)*n));
+        C0 = sym(zeros(a*n,(a+1)*n));
         
         if a >= 1
         for i=0:a-1

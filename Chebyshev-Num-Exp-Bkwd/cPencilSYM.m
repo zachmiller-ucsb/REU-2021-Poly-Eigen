@@ -9,8 +9,8 @@ n = polysize;
 mu = d - 1 - ep;
 
 %Defining L1 and L0
-L1 = zeros(d*n); 
-L0 = zeros(d*n);
+L1 = sym(zeros(d*n)); 
+L0 = sym(zeros(d*n));
  
 %Obtaining C_epsilon and C_mu
 [Ce1,Ce0] = C(n, ep,j);

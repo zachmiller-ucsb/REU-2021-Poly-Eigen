@@ -12,9 +12,9 @@ sizeTemp = size(coeff); % Block vector size = [rows per block, columns per block
 L = sizeTemp(3); % NUMBER OF BLOCKS
 k = d;
 %M1 = zeros((k-ep)*n, (ep+1)*n);
-M1 = zeros(n, n, k-ep, ep+1);
+M1 = sym(zeros(n, n, k-ep, ep+1));
 %M0 = zeros((k-ep)*n, (ep+1)*n);
-M0 = zeros(n, n, k-ep, ep+1);
+M0 = sym(zeros(n, n, k-ep, ep+1));
 if ep == 0 & j == 1
     % M1(1:n, 1:n) = coeff(:,:,L); % First Block M1
     M1(:,:, 1) = coeff(:, :, L);

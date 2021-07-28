@@ -1,0 +1,17 @@
+function B = block2notblock(A)
+
+% Function converts block matrix A to matrix B which is not in block form
+% (for purposes of matlab computations)
+
+sizeTemp = size(A);
+blockRows = sizeTemp(3);
+blockCols = sizeTemp(4);
+rows = sizeTemp(1)*sizeTemp(3);
+cols = sizeTemp(2)*sizeTemp(4);
+B = zeros(rows,cols);
+
+for R = 1:blockRows
+    for C = 1:blockCols
+        B((R-1)*n)
+    end
+end
