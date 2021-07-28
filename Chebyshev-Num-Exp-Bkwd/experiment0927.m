@@ -54,16 +54,103 @@ else
     M0 = block2notblock(M0);
 
     [C1,C0] = cPencil(M1,M0,j,polysize,ep,d);
-
-    C0;
-    C1;
-
-    polyeig(C0,C1)
-    evs
     
 end
 
+%% SCALING THE POLYNOMIAL
+%Here, we scale P so that max\{norm(P4),...,norm(P0)\}=1
 
+% For what follows
+k = d;
+n = polysize;
 
+coeffscal=zeros(n,n,d+1);
+nvect=zeros(n,1);
+for i=1:(k+1)
+    nvect(i,1)=norm(coeff(:,:,i));
+end
+nmax=max(nvect);
+for i=1:k+1
+    coeffscal(:,:,i)=coeff(:,:,i)/nmax;
+end
+
+%% EIGENVALUE/EIGENVECTOR COMPUTATIONS
+disp('Computing eigenvalues')
+
+[Vc,ec]=eig(C0,C1);
+[ec,ind] = sort(diag(ec),'ascend');
+Vc = Vc(:,ind); 
+
+%% LINEARIZED BACKWARD ERROR
+disp('Linearizations backward errors')
+
+nC0 = norm(C0);
+nC1 = norm(C1);
+
+%Compute backward errors
+back_error_C = zeros(d*n,1);
+for i=1:d*n
+    numC = norm((C0*ec(i)+C1)*Vc(:,i));
+    denC = norm(Vc(:,i))*max([nC0 nC1])*(abs(ec(i)+1));
+    back_error_C(i) = numC/denC;
+end
+
+%% POLYNOMIAL BACKWARD ERRORS
+disp('polynomial backward errors')
+
+Xc = zeros(n,d*n);
+
+for i=1:d*n
+    Xc(:,i) = Vc(ep*n+1:(ep+1)*n,i);
+end
+
+%BACKWARD ERRORS
+
+back_error_Pc = zeros(d*n,1);
+
+vector_norm_ratioc = zeros(d*n,1);
+
+for i=1:d*n
+    if r == 1
+        chebs = chebyshevT([0:d], ec(i)); 
+    else
+        chebs = chebyshevU([0:d], ec(i));
+    end
+    resc=zeros(n,n);
+    for j=1:d+1
+        resc=resc+coeff(:,:,j)*chebs(j);
+    end
+    rc = norm(resc*Xc(:,i)); % Remainder Term
+    
+    moduli = zeros(d+1,1);
+    for j=1:d+1
+        moduli(j,1) = abs(chebs(j));
+    end
+    atilde = sum(moduli); % Alpha Tilde Term
+    
+    back_error_Pc(i) = rc/(atilde*norm(Xc(:,i))); % ith entry in column vector of back error
+    
+    vector_norm_ratioc(i) = norm(Vc(:,i))/norm(Xc(:,i)); % ith entry in column vector of norm ratios
+end
+    
+%% PLOTS
+
+% BACKWARD ERROR RATIOS
+
+figure
+semilogy(back_error_Pc./back_error_C,'rx')
+
+hold on
+
+semilogy(vector_norm_ratioc,'bo')
+
+hold on
+
+legend('Pc/C')
+
+title('Degree d - backward')
+
+    
+   
 
 
