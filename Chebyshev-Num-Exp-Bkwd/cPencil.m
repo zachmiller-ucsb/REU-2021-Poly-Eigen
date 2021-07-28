@@ -1,7 +1,7 @@
 function [L1,L0] = cPencil(M1,M0,j)
 %Given M for a matrix polynomial and j = 1,2 specifying type 1 or 2 
 %creates a Chebyshev pencil linearization
- 
+
 %specifies size of the coefficients (n = 1 means scalar coefficients)
 n = 1; 
 

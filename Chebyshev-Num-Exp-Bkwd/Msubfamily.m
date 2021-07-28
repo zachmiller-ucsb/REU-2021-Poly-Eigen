@@ -6,10 +6,10 @@ function [M1,M0] = Msubfamily(coeff,ep,j)
 
 % Matrix coefficients A_i of P stored in block vector coeff
 
+nTemp = size(coeff); % Temp used to obtain size of P (block row vector : n x n*(k + 1)) 
+n = nTemp(1); % Size of P 
 L = length(coeff); % Matrices are 1-indexed so matrix polynomial will be of degree L - 1, i.e. A_i = coeff(i + 1)
 k = L - 1;
-nTemp = coeff(1); % Temp used to obtain size of P
-n = nTemp(1); % Size of P
 M1 = sym(zeros((k-ep)*n, (ep+1)*n));
 M0 = sym(zeros((k-ep)*n, (ep+1)*n));
 if ep == 0 & j == 1
