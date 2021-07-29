@@ -71,7 +71,8 @@ elseif ep >= 2 & ep <= k - 3
     M1(:, :, 1, 1) = 2*coeff(:,:,L);
     
     % M0(1:2*n, 1:n) = [coeff(L-1); coeff(L-2)-coeff(L)]; 
-    M0(:, :, 1:2, 1) = [coeff(:,:,L-1); coeff(:,:,L-2)-coeff(:,:,L)];
+    M0(:, :, 1, 1) = coeff(:,:,L-1);
+    M0(:, :, 2, 1) = coeff(:,:,L-2)-coeff(:,:,L);
     
     for i = 3:ep-1 % Left Block Rows 3 to k - ep M0 
         % M0(2*n+(i-3)*n+1:2*n+(i-2)*n, 1:n) = coeff(L-i);

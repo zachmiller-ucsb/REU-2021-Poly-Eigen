@@ -52,7 +52,8 @@ elseif ep == 1
     M1(:, :, 1, 1) = 2*coeff(:,:, L);
     
     % M0(1:2*n, 1:n) = [coeff(L-1); coeff(L-2)-coeff(L)]; % First Two Left Block Rows M0
-    M0(:, :, 1:2, 1) = [coeff(:,:, L-1); coeff(:,:, L-2)-coeff(:,:, L)];
+    M0(:, :, 1, 1) = coeff(:,:, L-1);
+    M0(:, :, 2, 1) = coeff(:,:, L-2)-coeff(:,:, L)
     
     for i = 3:ep-1 % Left Block Rows 3 to k - ep M0 
         % M0(2*n+(i-3)*n+1:2*n+(i-2)*n, 1:n) = coeff(L-i);
@@ -71,7 +72,8 @@ elseif ep >= 2 & ep <= k - 3
     M1(:, :, 1, 1) = 2*coeff(:,:,L);
     
     % M0(1:2*n, 1:n) = [coeff(L-1); coeff(L-2)-coeff(L)]; 
-    M0(:, :, 1:2, 1) = [coeff(:,:,L-1); coeff(:,:,L-2)-coeff(:,:,L)];
+    M0(:, :, 1, 1) = coeff(:,:,L-1);
+    M0(:, :, 2, 1) = coeff(:,:,L-2)-coeff(:,:,L);
     
     for i = 3:ep-1 % Left Block Rows 3 to k - ep M0 
         % M0(2*n+(i-3)*n+1:2*n+(i-2)*n, 1:n) = coeff(L-i);
@@ -112,10 +114,11 @@ elseif ep == k - 2
     
 else % ep == k - 1
     % M1(1:n, 1:n) = 2*coeff(L); % First Entry M1
-    M1(:, :, 1) = 2*coeff(:,:,L);
+    M1(:, :, 1, 1) = 2*coeff(:,:,L);
     
     % M0(1:n, 1:2*n) = [coeff(L-1) coeff(L-2)-coeff(L)]; % First Two Entries M0
-    M0(:, :, 1:2) = [coeff(:,:,L-1) coeff(:,:,L-2)-coeff(:,:,L)];
+    M0(:, :, 1) = coeff(:,:,L-1);
+    M0(:, :, 2) = coeff(:,:,L-2)-coeff(:,:,L);
     
     for i = 3:k % Entries 3 to k in M0
         % M0(1:n, (i-1)*n+1:i*n) = coeff(L-i);

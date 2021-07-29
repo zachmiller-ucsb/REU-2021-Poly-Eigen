@@ -1,15 +1,15 @@
 % File that will run experiments for chebyshev backward error
 
 d = 4; % degree
-polysize = 3; % size of polynomial
+polysize = 2; % size of polynomial
 pkmean = 0; % mean for pseudosmith
 pkwidth = 50; % std for pseudosmith
 
-symbolic = 1;
+symbolic = 0;
 
 j = 1; % Chebyshev Type 1 or 2
 
-ep = 2;
+ep = 3;
 
 [evs, Pmon] = polygen_pseudosmith(d, polysize, pkmean, pkwidth);
 
@@ -20,7 +20,7 @@ ep = 2;
 % P2 = test(:,:,3);
 % P3 = test(:,:,4);
 % P4 = test(:,:,5);
-% polyeig(P0,P1,P2,P3,P4)
+% [Tevs,TEVS] = polyeig(P0,P1,P2,P3,P4)
 % evs
 
 Pcheb = sym(zeros(size(Pmon)));
@@ -40,18 +40,18 @@ coeff = polygen_split_smith_mtx(d, Pcheb);
 if symbolic == 1
     [M1sym,M0sym] = Msubfamily(d,polysize,coeff,ep,j);
 
-    M1sym = block2notblock(M1sym);
-    M0sym = block2notblock(M0sym);
+    M1sym = block2notblock(M1sym,ep,d);
+    M0sym = block2notblock(M0sym,ep,d);
 
     [C1sym,C0sym] = cPencil(M1sym,M0sym,j,polysize,ep,d);
-    polyeig(C0sym,C1sym)
-    evs
+    polyeig(C0sym,C1sym);
+    evs;
 else
     coeff = double(coeff);
 
     [M1,M0] = Msubfamily(d,polysize,coeff,ep,j);
-    M1 = block2notblock(M1);
-    M0 = block2notblock(M0);
+    M1 = block2notblock(M1,ep,d);
+    M0 = block2notblock(M0,ep,d);
 
     [C1,C0] = cPencil(M1,M0,j,polysize,ep,d);
     
@@ -80,6 +80,7 @@ disp('Computing eigenvalues')
 [Vc,ec]=eig(C0,C1);
 [ec,ind] = sort(diag(ec),'ascend');
 Vc = Vc(:,ind); 
+Vc
 
 %% LINEARIZED BACKWARD ERROR
 disp('Linearizations backward errors')
@@ -103,6 +104,8 @@ Xc = zeros(n,d*n);
 for i=1:d*n
     Xc(:,i) = Vc(ep*n+1:(ep+1)*n,i);
 end
+
+Xc
 
 %BACKWARD ERRORS
 
@@ -146,11 +149,26 @@ semilogy(vector_norm_ratioc,'bo')
 
 hold on
 
+% Plotting Bounds
+% Backward Error Bound Polynomial
+% if ep == 0 & j == 1
+%     
+% elseif ep == 0 & j == 2
+%     
+% elseif ep == k - 1 & j == 1
+%     
+% elseif ep == k - 1 & j == 2
+%     
+% else
+%     
+% end
+% semilogy
+% Ratio of EigenVector Bound
+% semilogy()
+
 legend('Pc/C')
 
 title('Degree d - backward')
-
-    
    
 
 
