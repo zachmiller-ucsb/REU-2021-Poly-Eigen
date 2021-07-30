@@ -1,6 +1,6 @@
 % File that will run experiments for chebyshev backward error
 
-d = 4; % degree
+d = 30; % degree
 polysize = 2; % size of polynomial
 pkmean = 0; % mean for pseudosmith
 pkwidth = 50; % std for pseudosmith
@@ -13,15 +13,15 @@ ep = 2;
 
 [evs, Pmon] = polygen_pseudosmith(d, polysize, pkmean, pkwidth);
 
-test = polygen_split_smith_mtx(d, Pmon);
-test = double(test)
-P0 = test(:,:,1);
-P1 = test(:,:,2);
-P2 = test(:,:,3);
-P3 = test(:,:,4);
-P4 = test(:,:,5);
-Tevs = polyeig(P0,P1,P2,P3,P4)
-evs
+% test = polygen_split_smith_mtx(d, Pmon);
+% test = double(test)
+% P0 = test(:,:,1);
+% P1 = test(:,:,2);
+% P2 = test(:,:,3);
+% P3 = test(:,:,4);
+% P4 = test(:,:,5);
+% Tevs = polyeig(P0,P1,P2,P3,P4)
+% evs
 
 
 
@@ -30,23 +30,59 @@ evs
 Pcheb = sym(zeros(size(Pmon)));
 for r = 1:polysize
     for c = 1:polysize
-        monEntry = coeffs(Pmon(r, c)); % Returns coefficients with leading coefficient last
-        monEntry = fliplr(monEntry); % Returns coefficients with leading coefficient first (as mon2cheb takes it)
-        chebEntryPoly = transpose(mon2cheb(monEntry, j)); % Returns coefficients with leading coefficient first IN ROW VECTOR
-        chebEntryPoly = fliplr(chebEntryPoly); % Returns coefficients with leading coefficient last
+        monEntry = coeffs(Pmon(r, c)); % Returns coefficients with leading coefficient last % SUCCESS
+        monEntry = fliplr(monEntry); % Returns coefficients with leading coefficient first (as mon2cheb takes it) % SUCCESS
+        
+        chebEntryPoly = mon2cheb(monEntry, j); % Returns coefficients with leading coefficient first in row vector % SUCCESS
+
+%         chebEntryPoly = fliplr(chebEntryPoly); % Returns coefficients
+%         with leading coefficient last % SUCCESS  --- This was the
+%         error
+
         chebEntry = poly2sym(chebEntryPoly);
         Pcheb(r, c) = chebEntry;
     end
 end
 
+%%Another Test
+% double(coeffs(Pmon(1,1)))
+% double(coeffs(Pcheb(1,1)))
+
 coeff = polygen_split_smith_mtx(d, Pcheb);
+
+
+%%test using conversion back to Pmon from Pcheb
+% Pmoncoeff = polygen_split_smith_mtx(d, Pmon);
+% Pmoncoeff = double(Pmoncoeff)
+% doubPmon = zeros(polysize);
+% for i=1:d+1
+%     doubPmon = doubPmon + Pmoncoeff(:,:,i)*sym('x');
+% end
+% doubPmon
+% coeff = double(coeff);
+
+
+% back2mon = zeros(polysize);
+% for i=1:d+1
+%     back2mon = back2mon + coeff(:,:,i)*chebyshevT(i-1,sym('x'));
+% end
+% back2mon = polygen_split_smith_mtx(d, back2mon);
+% back2mon = double(back2mon)
+% P0 = back2mon(:,:,1);
+% P1 = back2mon(:,:,2);
+% P2 = back2mon(:,:,3);
+% P3 = back2mon(:,:,4);
+% P4 = back2mon(:,:,5);
+% Back2Monevs = polyeig(P0,P1,P2,P3,P4)
+% evs
+
 
 
 if symbolic == 1
     [M1sym,M0sym] = Msubfamily(d,polysize,coeff,ep,j);
 
-    M1sym = block2notblock(M1sym,ep,d);
-    M0sym = block2notblock(M0sym,ep,d);
+    M1sym = block2notblock(M1sym);
+    M0sym = block2notblock(M0sym);
 
     [C1sym,C0sym] = cPencil(M1sym,M0sym,j,polysize,ep,d);
  
@@ -54,8 +90,11 @@ else
     coeff = double(coeff);
 
     [M1,M0] = Msubfamily(d,polysize,coeff,ep,j);
-    M1 = block2notblock(M1,ep,d);
-    M0 = block2notblock(M0,ep,d);
+    M1 = block2notblock(M1);
+    M0 = block2notblock(M0);
+    
+    M1
+    M0
 
     [C1,C0] = cPencil(M1,M0,j,polysize,ep,d);
     

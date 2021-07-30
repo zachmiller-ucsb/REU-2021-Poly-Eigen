@@ -1,21 +1,21 @@
-function B = block2notblock(A,ep,d)
+function B = block2notblock(A)
 
 % Function converts block matrix A to matrix B which is not in block form
-% (for purposes of matlab computations)
+% (for purposes of matlab computations) 
+
+% If block matrix has one dimension automatically combines to column vector
 
 sizeTemp = size(A);
-if ep == 0
+metaSize = size(size(A)); % Want to check if A is block row or column vector
+m = sizeTemp(1); % Number rows in a block entry in A
+n = sizeTemp(2); % '' columns '' '' '' '' '' ''
+if metaSize(2) == 3
     totBlockCols = 1;
     totBlockRows = sizeTemp(3);
-elseif ep == d - 1
-    totBlockRows = 1;
-    totBlockCols = sizeTemp(4);
 else
     totBlockRows = sizeTemp(3); % Total number block rows in A
     totBlockCols = sizeTemp(4); % '' '' '' columns '' ''
 end
-m = sizeTemp(1); % Number rows in a block entry in A
-n = sizeTemp(2); % '' columns '' '' '' '' '' ''
 rows = sizeTemp(1)*totBlockRows; % Number rows in A
 cols = sizeTemp(2)*totBlockCols; % Number columns in A
 B = zeros(rows,cols); % Create B
