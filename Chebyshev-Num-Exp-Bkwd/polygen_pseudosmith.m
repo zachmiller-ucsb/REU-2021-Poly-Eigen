@@ -31,7 +31,7 @@ function [evs, P] = polygen_pseudosmith(d, polysize, ...
         evrowindices = (k-1) * d + 1 : k * d;
         UT(k, k) = prod(sym('x') - evs(evrowindices));
     end
-
+    
     % Deviate from Smith further here to avoid singular coefficients.
     % Fill the upper triangular portion of UT with random polynomials.
     for r = 1:polysize-1

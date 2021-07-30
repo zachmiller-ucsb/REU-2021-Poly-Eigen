@@ -37,13 +37,16 @@ for k = 1:N+1
    A(k:N+1,k) = C{N+2-k};
 end
 % Perform the basis conversion by solving the linear system
-a = transpose(A\b(:));
+a = A\b(:);
 
-
-c = zeros(N+1,1);
+c = zeros(N+1);
 for i=0:N
-    c(i+1) = i;
+    c(i) = i;
 end
+t = transpose(chebyshevT(c,sym('x')));
+u = coeffs(a * c);
+roots(u);
+roots(
 
 
 function C = chebpoly(r,n)
