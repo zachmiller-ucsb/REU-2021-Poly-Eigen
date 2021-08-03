@@ -7,7 +7,11 @@ function pks = polygen_split_smith_mtx(d, P)
     pks = sym(zeros(n, n, d+1));
     for r = 1:n
         for c = 1:n
-            pks(r, c, :) = coeffs(P(r, c));
+            coeffrc = coeffs(P(r, c),'All');
+            sizeTemp = size(coeffrc);
+            for i=1:sizeTemp(2)
+                pks(r, c, i) = coeffrc(sizeTemp(2) + 1 - i);
+            end
         end
     end
 end

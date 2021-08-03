@@ -1,15 +1,15 @@
 % File that will run experiments for chebyshev backward error
 
-d = 30; % degree
+d = 4; % degree
 polysize = 2; % size of polynomial
 pkmean = 0; % mean for pseudosmith
 pkwidth = 50; % std for pseudosmith
 
-symbolic = 0;
+symbolic = 0; % Doesn't work at the moment, because we double the matrix polynomial before constructing linearization
 
 j = 1; % Chebyshev Type 1 or 2
 
-ep = 2;
+ep = 3;
 
 [evs, Pmon] = polygen_pseudosmith(d, polysize, pkmean, pkwidth);
 
@@ -62,43 +62,22 @@ coeff = polygen_split_smith_mtx(d, Pcheb);
 % coeff = double(coeff);
 
 
-% back2mon = zeros(polysize);
-% for i=1:d+1
-%     back2mon = back2mon + coeff(:,:,i)*chebyshevT(i-1,sym('x'));
-% end
-% back2mon = polygen_split_smith_mtx(d, back2mon);
-% back2mon = double(back2mon)
-% P0 = back2mon(:,:,1);
-% P1 = back2mon(:,:,2);
-% P2 = back2mon(:,:,3);
-% P3 = back2mon(:,:,4);
-% P4 = back2mon(:,:,5);
-% Back2Monevs = polyeig(P0,P1,P2,P3,P4)
-% evs
-
-
-
-if symbolic == 1
-    [M1sym,M0sym] = Msubfamily(d,polysize,coeff,ep,j);
-
-    M1sym = block2notblock(M1sym);
-    M0sym = block2notblock(M0sym);
-
-    [C1sym,C0sym] = cPencil(M1sym,M0sym,j,polysize,ep,d);
- 
-else
-    coeff = double(coeff);
-
-    [M1,M0] = Msubfamily(d,polysize,coeff,ep,j);
-    M1 = block2notblock(M1);
-    M0 = block2notblock(M0);
-    
-    M1
-    M0
-
-    [C1,C0] = cPencil(M1,M0,j,polysize,ep,d);
-    
+% Check Change of Basis Degree 4 (Chebyshev Polynomials)
+back2mon = zeros(polysize);
+for i=1:d+1
+    back2mon = back2mon + coeff(:,:,i)*chebyshevT(i-1,sym('x'));
 end
+back2mon = polygen_split_smith_mtx(d, back2mon);
+back2mon = double(back2mon)
+P0 = back2mon(:,:,1);
+P1 = back2mon(:,:,2);
+P2 = back2mon(:,:,3);
+P3 = back2mon(:,:,4);
+P4 = back2mon(:,:,5);
+Back2Monevs = polyeig(P0,P1,P2,P3,P4);
+norm(sort(evs,'ascend') - sort(Back2Monevs,'ascend'))/norm(evs)
+
+%%
 
 %% SCALING THE POLYNOMIAL
 %Here, we scale P so that max\{norm(P4),...,norm(P0)\}=1
@@ -107,24 +86,68 @@ end
 k = d;
 n = polysize;
 
+coeff = double(coeff);
 coeffscal=zeros(n,n,d+1);
-nvect=zeros(n,1);
+norms=zeros(k+1,1);
 for i=1:(k+1)
-    nvect(i,1)=norm(coeff(:,:,i));
+    norms(i,1)=norm(coeff(:,:,i));
 end
-nmax=max(nvect);
+nmax=max(norms);
 for i=1:k+1
     coeffscal(:,:,i)=coeff(:,:,i)/nmax;
 end
 
+%% BUILDING THE LINEARIZATION
+
+if symbolic == 1 % This will not run
+    [M1sym,M0sym] = Msubfamily(d,polysize,coeffscal,ep,j);
+
+    M1sym = block2notblock(M1sym);
+    M0sym = block2notblock(M0sym);
+
+    [C1sym,C0sym] = cPencil(M1sym,M0sym,j,polysize,ep,d);
+ 
+else
+    coeffscal = double(coeffscal); % Check this
+
+    [M1,M0] = Msubfamily(d,polysize,coeffscal,ep,j);
+    
+    if ep == d - 1
+        M1 = pagetranspose(M1);
+        M0 = pagetranspose(M0);
+        M1 = block2notblock(M1);
+        M0 = block2notblock(M0);
+%         M1 = transpose(M1);
+%         M0 = transpose(M0);
+    else
+        M1 = block2notblock(M1); % Fix this for ep = k - 1
+        M0 = block2notblock(M0);
+    end
+    
+
+    [C1,C0] = cPencil(M1,M0,j,polysize,ep,d);
+    
+end
 %% EIGENVALUE/EIGENVECTOR COMPUTATIONS
 disp('Computing eigenvalues')
 
-[Vc,ec]=eig(C0,C1);
+[Vc,ec]=eig(C0,-C1);
 [ec,ind] = sort(diag(ec),'ascend');
-Vc = Vc(:,ind); 
-ec
-sort(evs,'ascend')
+Vc = Vc(:,ind);
+ec - sort(evs,'ascend')
+
+% disp('Check Linearization:')
+% ec
+% evs
+% sort(evs,'ascend')
+
+%% Eigenvector Recovery
+
+Xc = zeros(n,d*n);
+
+for i=1:d*n
+    Xc(:,i) = Vc(ep*n+1:(ep+1)*n,i);
+end
 
 %% LINEARIZED BACKWARD ERROR
 disp('Linearizations backward errors')
@@ -143,12 +166,6 @@ end
 %% POLYNOMIAL BACKWARD ERRORS
 disp('polynomial backward errors')
 
-Xc = zeros(n,d*n);
-
-for i=1:d*n
-    Xc(:,i) = Vc(ep*n+1:(ep+1)*n,i);
-end
-
 %BACKWARD ERRORS
 
 back_error_Pc = zeros(d*n,1);
@@ -157,15 +174,22 @@ vector_norm_ratioc = zeros(d*n,1);
 
 for i=1:d*n
     if r == 1
-        chebs = chebyshevT([0:d], ec(i)); 
+        chebs = chebyshevT([0:d], ec(i));
     else
         chebs = chebyshevU([0:d], ec(i));
     end
     resc=zeros(n,n);
     for j=1:d+1
-        resc=resc+coeff(:,:,j)*chebs(j);
+        resc=resc+coeffscal(:,:,j)*chebs(j);
     end
     rc = norm(resc*Xc(:,i)); % Remainder Term
+    
+    % Check Eigenpairs Polynomial
+    
+%     disp('Check Eigenpairs Polynomial')
+%     for i=1:d*polysize
+%         resc*Xc(:,i)
+%     end
     
     moduli = zeros(d+1,1);
     for j=1:d+1

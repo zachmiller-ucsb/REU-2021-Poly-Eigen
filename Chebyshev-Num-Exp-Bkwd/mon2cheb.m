@@ -32,7 +32,7 @@ function a = mon2cheb(b,r)
 N = length(b)-1;
 C = chebpoly(r,N);
 % Create the transformation matrix
-A = zeros(N+1);
+A = sym(zeros(N+1));
 for k = 1:N+1
    A(k:N+1,k) = C{N+2-k};
 end
@@ -40,10 +40,6 @@ end
 a = transpose(A\b(:));
 
 
-c = zeros(N+1,1);
-for i=0:N
-    c(i+1) = i;
-end
 
 
 function C = chebpoly(r,n)
